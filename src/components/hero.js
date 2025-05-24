@@ -1,18 +1,27 @@
 import React from "react";
+import { Typewriter } from "react-simple-typewriter";
+import "../styles/Hero.css";
 
 const Hero = () => {
   return (
-    <section id="hero" style={{
-      height: "80vh",
-      backgroundColor: "#333",
-      color: "white",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center"
-    }}>
-      <h1>Hello, I'm Wahyu</h1>
-      <p>App Developer | React Enthusiast</p>
+    <section id="hero" className="hero">
+      <div className="hero-content">
+        <h1 className="fade-in">
+          Hello, I'm <span>Dewa</span>
+        </h1>
+        <h2 className="typing-text">
+          <Typewriter
+            words={['App Developer 🚀', 'React Enthusiast ⚛️', 'Creative Coder 💡']}
+            loop={0}
+            cursor
+            cursorStyle='|'
+            typeSpeed={70}
+            deleteSpeed={50}
+            delaySpeed={2000}
+          />
+        </h2>
+        <a href="#projects" className="cta-button glow-button">View Projects</a>
+      </div>
     </section>
   );
 };
