@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Typewriter } from "react-simple-typewriter";
 import "../styles/Hero.css";
 

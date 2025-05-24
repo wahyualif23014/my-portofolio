@@ -12,7 +12,7 @@ const Navbar = () => {
 
       <div className={`navbar-links ${menuOpen ? "active" : ""}`}>
         <a href="#hero">Home</a>
-        <a href="#about">About</a>
+        <a href="#about.js">About</a>
         <a href="#projects">Projects</a>
       </div>
 

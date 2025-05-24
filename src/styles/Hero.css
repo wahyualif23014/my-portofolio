@@ -1,25 +1,24 @@
 .hero {
   height: 100vh;
-  background: linear-gradient(135deg, #0f0f0f, #1c1c1c);
+  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 0 2rem;
   text-align: center;
-  overflow: hidden;
-  background-image: url("https://images.unsplash.com/photo-1431440869543-efaf3388c585?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+  /* background-image: url("https://images.unsplash.com/photo-1431440869543-efaf3388c585?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"); */
 }
 
 .hero-content {
   max-width: 800px;
-  padding: 2rem;
-  animation: fadeUp 1s ease-out;
+  animation: fadeIn 1.2s ease-in-out both;
 }
 
 .hero h1 {
   font-size: 3rem;
-  font-weight: 700;
   margin-bottom: 1rem;
+  font-weight: 700;
 }
 
 .hero h1 span {
@@ -27,12 +26,10 @@
   text-shadow: 0 0 10px #f0a500;
 }
 
-.typing-text {
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: #ccc;
+.hero p {
+  font-size: 1.2rem;
   margin-bottom: 2rem;
-  min-height: 2.5rem;
+  color: #c0c0c0;
 }
 
 .cta-button {
@@ -43,10 +40,7 @@
   text-decoration: none;
   font-weight: bold;
   transition: all 0.3s ease;
-}
-
-.glow-button {
-  box-shadow: 0 0 20px #f0a500;
+  box-shadow: 0 0 10px #f0a500;
 }
 
 .cta-button:hover {
@@ -55,8 +49,7 @@
   transform: scale(1.05);
 }
 
-/* Animasi masuk */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(40px); }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 }
