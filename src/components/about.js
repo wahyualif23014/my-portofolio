@@ -3,19 +3,19 @@ import "../styles/About.css";
 
 // Data constants - easier to maintain
 const PERSONAL_INFO = {
-  name: "Dewa Ngurah",
-  title: "Senior Frontend Developer",
+  name: "Wahyu Alif Ajir Nurdianto (Dewa)",
+  title: "Junior Frontend Developer",
   email: "zexvulca@gmail.com",
-  phone: "+62 812 3456 7890",
-  location: "Jakarta, Indonesia",
+  phone: "+62 877-4004-1124",
+  location: "Semarang, Indonesia",
   school: "Universitas Trunojoyo Madura",
-  experience: "5+ Years"
+  experience: "2+ Years"
 };
 
 const PROFESSIONAL_EXPERIENCE = [
   {
     id: 1,
-    title: "Senior Frontend Developer",
+    title: "Junior Frontend Developer",
     company: "TechCorp Indonesia",
     duration: "2022 - Present",
     description: "Memimpin pengembangan aplikasi web kompleks menggunakan React.js dan Next.js, meningkatkan performa aplikasi hingga 40% dan mengimplementasikan arsitektur micro-frontend.",
