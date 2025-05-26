@@ -10,6 +10,7 @@
   background: linear-gradient(135deg, #0a0a0f 0%, #1a0a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%);
   --mouse-x: 0px;
   --mouse-y: 0px;
+  scroll-behavior: smooth;
 }
 
 .hero::before {
