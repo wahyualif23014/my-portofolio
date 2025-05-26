@@ -1,4 +1,7 @@
 /* Navbar.css */
+html {
+  scroll-behavior: smooth;
+}
 
 .navbar {
   position: fixed;
