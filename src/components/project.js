@@ -55,6 +55,18 @@ const Projects = () => {
       description: "Feature-rich task management application with drag & drop functionality",
       tech: ["React", "Local Storage", "Material UI"],
       category: "Productivity"
+    },
+    {
+      title: "Absolute Cinema App",
+      description: "luxury and elegance, by providing refreshment to your eyes",
+      tech: ["Dart", "Flutter", "Material UI", "Firebase"],
+      category: "App Mobile"
+    },
+    {
+      title: "Bookly",
+      description: "With the latest technology, books to read become a window to the world.",
+      tech: ["PHP", "CSS", "Java script"],
+      category: "E-commerce, Web Development"
     }
   ];
 
