@@ -52,7 +52,7 @@ const Navbar = () => {
             <div className="logo-ring"></div>
           </div>
           <span className="logo-text">
-            <span className="logo-highlight">Dewa</span>Portfolio
+            <span className="logo-highlight">Dewa</span>Portofolio
           </span>
         </div>
 
