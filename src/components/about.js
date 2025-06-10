@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../styles/About.css";
 
-// Data constants - easier to maintain
 const PERSONAL_INFO = {
   name: "Wahyu Alif Ajir Nurdianto (Dewa)",
   title: "Junior Frontend Developer",
