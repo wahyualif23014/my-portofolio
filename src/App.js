@@ -4,6 +4,8 @@ import Hero from "./components/hero";
 import About from "./components/about";
 import Projects from "./components/project";
 import Footer from "./components/footer";
+// import Contact from "./components/contact";
+
 
 function App() {
   return (
@@ -13,6 +15,7 @@ function App() {
       <About />
       <Projects />
       <Footer />
+      {/* <Contact /> */}
     </>
   );
 }
