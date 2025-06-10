@@ -103,12 +103,13 @@ const useIntersectionObserver = () => {
       }
     );
 
-    elementRefs.current.forEach(el => {
+    const currentRefs = elementRefs.current;
+    currentRefs.forEach(el => {
       if (el) observer.observe(el);
     });
 
     return () => {
-      elementRefs.current.forEach(el => {
+      currentRefs.forEach(el => {
         if (el) observer.unobserve(el);
       });
     };
