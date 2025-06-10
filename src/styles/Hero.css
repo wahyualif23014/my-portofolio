@@ -218,7 +218,12 @@
   font-weight: 400;
   margin-bottom: 0.5rem;
   opacity: 0;
+  margin-top: 3rem;
   animation: textReveal 1s ease-out 1s forwards;
+  letter-spacing: 0cap;
+  position: relative;
+  
+
 }
 
 .name-highlight {
