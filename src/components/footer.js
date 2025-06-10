@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/Footer.css"; // Adjust the path as necessary
+import "../styles/Footer.css"; 
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -56,14 +56,14 @@ const Footer = () => {
         
         <div className="footer-bottom">
           <div className="copyright">
-            <p>&copy; {currentYear} Wahyu's Portfolio. All rights reserved.</p>
+            <p>&copy; {currentYear} Wahyu's Portofolio. All rights reserved.</p>
           </div>
           <div className="footer-meta">
             <a href="#privacy">Privacy Policy</a>
             <span className="separator">•</span>
             <a href="#terms">Terms of Service</a>
             <span className="separator">•</span>
-            <span className="built-with">Built with React & ❤️</span>
+            <span className="built-with">Built with React</span>
           </div>
         </div>
       </div>
