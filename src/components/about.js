@@ -65,7 +65,6 @@ const SKILLS = [
   { id: 8, name: "MongoDB", level: 80, category: "Database" }
 ];
 
-// Custom hooks for better organization
 const useScrollProgress = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
 
