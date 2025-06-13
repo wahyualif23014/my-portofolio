@@ -67,7 +67,7 @@ const Navbar = () => {
             <span className="nav-text">Home</span>
             <div className="nav-glow"></div>
           </a>
-          {/* <a 
+          <a 
             href="#about" 
             className={activeSection === 'about' ? 'active' : ''}
             onClick={() => handleNavClick('about')}
@@ -75,7 +75,7 @@ const Navbar = () => {
             <span className="nav-number">02</span>
             <span className="nav-text">About</span>
             <div className="nav-glow"></div>
-          </a> */}
+          </a>
           <a 
             href="#projects" 
             className={activeSection === 'projects' ? 'active' : ''}

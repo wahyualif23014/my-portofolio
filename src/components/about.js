@@ -51,6 +51,14 @@ const PROFESSIONAL_EXPERIENCE = [
     duration: "2018 - 2019",
     description: "Menangani berbagai proyek web development untuk UMKM dan startup lokal, membangun portofolio dan networking profesional.",
     technologies: ["WordPress", "React", "Bootstrap", "MySQL", "Git"]
+  },
+  {
+    "id": 6,
+    "title": "Machine Learning Intern",
+    "company": "Independent",
+    "duration": "2023 - 2024",
+    "description": "Handled various web development projects for SMEs and local startups, building a strong portfolio and professional network. Also explored machine learning by developing data-driven applications and participating in relevant research projects.",
+    "technologies": ["Python", "scikit-learn", "TensorFlow", "Pandas", "NumPy", "React", "Git"]
   }
 ];
 

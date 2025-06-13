@@ -67,6 +67,12 @@ const Projects = () => {
       description: "With the latest technology, books to read become a window to the world.",
       tech: ["PHP", "CSS", "Java script"],
       category: "E-commerce, Web Development"
+    },
+    {
+      title: "List money",
+      description: "With the latest technology, managing your finances becomes a breeze.",
+      tech: ["Dart", "Bloc", "Firebase","Supabase"],
+      category: "Productivity, App Mobile"
     }
   ];
 
