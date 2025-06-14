@@ -37,7 +37,6 @@
   scroll-behavior: smooth;
 }
 
-/* Animated cyber grid background */
 .about-container::before {
   content: '';
   position: fixed;
