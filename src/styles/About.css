@@ -190,7 +190,6 @@
   animation: pulseGlow 2s ease-in-out infinite;
 }
 
-/* Main content styling */
 .about-content {
   position: relative;
   z-index: 10;
