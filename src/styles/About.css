@@ -155,7 +155,6 @@
   animation: particleTwinkle 3s ease-in-out infinite;
 }
 
-/* Enhanced scroll progress */
 .scroll-progress {
   position: fixed;
   top: 0;
