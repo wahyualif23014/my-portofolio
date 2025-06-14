@@ -296,7 +296,6 @@
   animation: typewriter 2s steps(20) 1s both;
 }
 
-/* Personal info with futuristic styling */
 .personal-info {
   display: flex;
   flex-direction: column;
