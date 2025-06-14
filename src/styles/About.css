@@ -52,7 +52,6 @@
   z-index: -3;
 }
 
-/* Flowing cable lines background */
 .about-container::after {
   content: '';
   position: fixed;
@@ -69,7 +68,6 @@
   z-index: -2;
 }
 
-/* Cyber cables animation */
 .about-container .cyber-cables {
   position: fixed;
   top: 0;
