@@ -1,10 +1,35 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Typewriter } from "react-simple-typewriter";
 import "../styles/Hero.css";
 
 const Hero = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const heroRef = useRef(null);
+  const animationFrameId = useRef(null); // To store animation frame ID for cleanup
+
+  // Memoize handleMouseMove to prevent re-creation on every render
+  const handleMouseMove = useCallback((e) => {
+    // Debounce or throttle this if it's still heavy, but direct CSS vars are often performant enough
+    if (heroRef.current) {
+      const { clientX, clientY } = e;
+      const { innerWidth, innerHeight } = window;
+
+      // Normalize positions to a smaller range for less drastic movement
+      const xPos = (clientX / innerWidth - 0.5) * 1; // Reduced multiplier
+      const yPos = (clientY / innerHeight - 0.5) * 1; // Reduced multiplier
+
+      // Request animation frame for smooth updates
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+      }
+      animationFrameId.current = requestAnimationFrame(() => {
+        if (heroRef.current) {
+          heroRef.current.style.setProperty('--mouse-x', `${xPos * 10}px`); // Reduced parallax intensity
+          heroRef.current.style.setProperty('--mouse-y', `${yPos * 10}px`); // Reduced parallax intensity
+        }
+      });
+    }
+  }, []);
 
   useEffect(() => {
     // Trigger animations after component mounts
@@ -12,38 +37,29 @@ const Hero = () => {
       setIsLoaded(true);
     }, 100);
 
-    // Mouse movement parallax effect
-    const handleMouseMove = (e) => {
-      const { clientX, clientY } = e;
-      const { innerWidth, innerHeight } = window;
-      
-      const xPos = (clientX / innerWidth - 0.5) * 2;
-      const yPos = (clientY / innerHeight - 0.5) * 2;
-      
-      if (heroRef.current) {
-        heroRef.current.style.setProperty('--mouse-x', `${xPos * 20}px`);
-        heroRef.current.style.setProperty('--mouse-y', `${yPos * 20}px`);
-      }
-    };
-
     window.addEventListener('mousemove', handleMouseMove);
-    
+
     return () => {
       clearTimeout(timer);
       window.removeEventListener('mousemove', handleMouseMove);
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current);
+      }
     };
-  }, []);
+  }, [handleMouseMove]); // Add handleMouseMove to dependency array
 
-  // Generate floating particles
+  // Generate floating particles - consider reducing the count or using CSS for more static background
   const generateParticles = () => {
-    return Array.from({ length: 15 }, (_, i) => (
+    // Reduced number of particles for performance
+    const numberOfParticles = 10;
+    return Array.from({ length: numberOfParticles }, (_, i) => (
       <div
         key={i}
         className={`particle particle-${i + 1}`}
         style={{
           left: `${Math.random() * 100}%`,
-          animationDelay: `${Math.random() * 10}s`,
-          animationDuration: `${15 + Math.random() * 20}s`
+          animationDelay: `${Math.random() * 8}s`, // Slightly reduced max delay
+          animationDuration: `${10 + Math.random() * 10}s` // Reduced max duration
         }}
       />
     ));
@@ -56,7 +72,7 @@ const Hero = () => {
         <div className="gradient-orb orb-1"></div>
         <div className="gradient-orb orb-2"></div>
         <div className="gradient-orb orb-3"></div>
-        <div className="gradient-orb orb-4"></div>
+        {/* Removed orb-4 for slight reduction in animated elements */}
       </div>
 
       {/* Floating Particles */}
@@ -64,20 +80,17 @@ const Hero = () => {
         {generateParticles()}
       </div>
 
-      {/* Grid Pattern */}
+      {/* Grid Pattern - Consider simplifying or using a static background image */}
       <div className="grid-pattern"></div>
 
-      {/* Neural Network Lines */}
+      {/* Neural Network Lines - Consider reducing complexity or removing if not critical */}
       <div className="neural-network">
         <div className="neural-line line-1"></div>
         <div className="neural-line line-2"></div>
-        <div className="neural-line line-3"></div>
-        <div className="neural-line line-4"></div>
+        {/* Removed line-3 and line-4 for fewer animated lines */}
         <div className="neural-node node-1"></div>
         <div className="neural-node node-2"></div>
-        <div className="neural-node node-3"></div>
-        <div className="neural-node node-4"></div>
-        <div className="neural-node node-5"></div>
+        {/* Removed node-3, node-4, node-5 for fewer animated nodes */}
       </div>
 
       {/* Main Content */}
@@ -87,13 +100,13 @@ const Hero = () => {
             <span className="greeting">Hello, I'm</span>
             <span className="name-highlight">Dewa</span>
           </h1>
-          
+
           <div className="typing-container">
             <h2 className="typing-text">
               <Typewriter
                 words={[
-                  'App Developer 🚀', 
-                  'React Enthusiast ⚛️', 
+                  'App Developer 🚀',
+                  'React Enthusiast ⚛️',
                   'Creative Coder 💡',
                   'UI/UX Designer 🎨',
                   'Tech Innovator 🌟'
@@ -110,7 +123,7 @@ const Hero = () => {
 
           <div className="hero-description">
             <p>
-              Crafting digital experiences with cutting-edge technology and creative innovation. 
+              Crafting digital experiences with cutting-edge technology and creative innovation.
               Transforming ideas into powerful, user-centric applications.
             </p>
           </div>
@@ -123,7 +136,7 @@ const Hero = () => {
                 <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </a>
-            
+
             <a href="#contact" className="cta-button secondary-cta">
               <span>Get In Touch</span>
               <div className="button-ripple"></div>
@@ -137,7 +150,7 @@ const Hero = () => {
             <div className="code-line">const developer = "passionate";</div>
             <div className="code-line">function createAmazingApps()</div>
             <div className="code-line">&nbsp;&nbsp;return innovation + creativity;</div>
-            <div className="code-line"></div>
+            {/* Removed one code-line for slight reduction */}
           </div>
         </div>
       </div>
@@ -148,6 +161,7 @@ const Hero = () => {
         <div className="scroll-dot"></div>
       </div>
 
+      {/* Social links (uncomment if you want to include them) */}
       {/* <div className="social-links">
         <a href="https://github.com/wahyualif23014" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="GitHub">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
