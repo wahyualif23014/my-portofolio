@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import "../styles/About.css";
 
 const PERSONAL_INFO = {
@@ -53,12 +53,12 @@ const PROFESSIONAL_EXPERIENCE = [
     technologies: ["WordPress", "React", "Bootstrap", "MySQL", "Git"]
   },
   {
-    "id": 6,
-    "title": "Machine Learning Intern",
-    "company": "Independent",
-    "duration": "2023 - 2024",
-    "description": "Handled various web development projects for SMEs and local startups, building a strong portfolio and professional network. Also explored machine learning by developing data-driven applications and participating in relevant research projects.",
-    "technologies": ["Python", "scikit-learn", "TensorFlow", "Pandas", "NumPy", "React", "Git"]
+    id: 6,
+    title: "Machine Learning Intern",
+    company: "Independent", // Or the actual company if it's not truly independent
+    duration: "2023 - 2024",
+    description: "Handled various web development projects for SMEs and local startups, building a strong portfolio and professional network. Also explored machine learning by developing data-driven applications and participating in relevant research projects.",
+    technologies: ["Python", "scikit-learn", "TensorFlow", "Pandas", "NumPy", "React", "Git"]
   }
 ];
 
@@ -73,89 +73,106 @@ const SKILLS = [
   { id: 8, name: "MongoDB", level: 80, category: "Database" }
 ];
 
-const useScrollProgress = () => {
+// Custom Hook for Scroll Progress (optimized)
+const useScrollProgress = (elementRef) => {
   const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollTop = window.pageYOffset;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = (scrollTop / docHeight) * 100;
-      setScrollProgress(Math.min(progress, 100));
+      if (!elementRef.current) return;
+
+      const element = elementRef.current;
+      const rect = element.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+
+      // Calculate progress relative to the element's visibility in the viewport
+      // 0% when element's top is at viewport bottom, 100% when element's bottom is at viewport top
+      let progress = 0;
+      if (rect.height > 0) {
+        progress = ((viewportHeight - rect.top) / (viewportHeight + rect.height)) * 100;
+      }
+      
+      setScrollProgress(Math.min(Math.max(0, progress), 100)); // Clamp between 0 and 100
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Also run on mount to set initial progress
+    handleScroll();
+
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [elementRef]); // Dependency on elementRef to re-run if it changes
 
   return scrollProgress;
 };
 
-const useIntersectionObserver = () => {
+// Custom Hook for Intersection Observer (optimized)
+const useIntersectionObserver = (options) => {
   const [visibleElements, setVisibleElements] = useState(new Set());
-  const elementRefs = useRef([]);
+  const elementMap = useRef(new Map()); // Use a Map to store refs by their data-id
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           const id = entry.target.getAttribute('data-id');
-          if (entry.isIntersecting && id) {
-            setVisibleElements(prev => new Set([...prev, id]));
-          }
+          if (!id) return; // Ensure data-id exists
+
+          setVisibleElements(prev => {
+            const newSet = new Set(prev);
+            if (entry.isIntersecting) {
+              newSet.add(id);
+            } else {
+              newSet.delete(id); // Remove when not intersecting to avoid false positives on scroll
+            }
+            return newSet;
+          });
         });
       },
-      {
-        threshold: 0.3,
-        rootMargin: "-50px 0px -50px 0px"
-      }
+      options // Pass options directly from arguments
     );
 
-    const currentRefs = elementRefs.current;
-    currentRefs.forEach(el => {
+    // Observe all currently registered elements
+    elementMap.current.forEach(el => {
       if (el) observer.observe(el);
     });
 
+    // Copy the current map for cleanup to avoid stale ref issues
+    const elementsForCleanup = Array.from(elementMap.current.values());
+
     return () => {
-      currentRefs.forEach(el => {
+      // Unobserve all elements on cleanup using the copied array
+      elementsForCleanup.forEach(el => {
         if (el) observer.unobserve(el);
       });
+      observer.disconnect(); // Disconnect the observer
     };
-  }, []);
+  }, [options]); // Re-run if options change
 
-  const setElementRef = (index) => (el) => {
-    elementRefs.current[index] = el;
-  };
+  // Callback to set element ref, memoized
+  const setElementRef = useCallback((id) => (el) => {
+    if (el) {
+      elementMap.current.set(id, el);
+    } else {
+      elementMap.current.delete(id);
+    }
+  }, []);
 
   return { visibleElements, setElementRef };
 };
 
-// Component parts for better organization
-const FloatingParticles = () => (
-  <div className="floating-particles">
-    {Array.from({ length: 20 }, (_, i) => (
-      <div
-        key={i}
-        className="particle"
-        style={{
-          left: `${Math.random() * 100}%`,
-          animationDelay: `${Math.random() * 6}s`,
-          animationDuration: `${4 + Math.random() * 4}s`
-        }}
-      />
-    ))}
-  </div>
-);
+// --- Optimized Child Components ---
 
-const ProfileHeader = () => (
+// Memoized for performance as it's purely presentational and stable data
+const ProfileHeader = React.memo(() => (
   <div className="profile-header">
-    <div className="profile-avatar"></div>
+    <div className="profile-avatar" aria-label="Dewa's Avatar"></div>
     <h1 className="profile-name">{PERSONAL_INFO.name}</h1>
     <p className="profile-title">{PERSONAL_INFO.title}</p>
   </div>
-);
+));
 
-const PersonalInfo = () => (
+// Memoized for performance
+const PersonalInfo = React.memo(() => (
   <div className="personal-info">
     <div className="info-item">
       <span className="info-label">Email:</span>
@@ -178,10 +195,15 @@ const PersonalInfo = () => (
       <span className="info-value">{PERSONAL_INFO.experience}</span>
     </div>
   </div>
-);
+));
 
-const SkillsSection = () => {
+// Memoized for performance
+const SkillsSection = React.memo(() => {
   const [activeSkill, setActiveSkill] = useState(null);
+
+  // Use useCallback for event handlers
+  const handleMouseEnter = useCallback((id) => () => setActiveSkill(id), []);
+  const handleMouseLeave = useCallback(() => () => setActiveSkill(null), []);
 
   return (
     <div className="skills-section">
@@ -191,8 +213,8 @@ const SkillsSection = () => {
           <div
             key={skill.id}
             className="skill-item"
-            onMouseEnter={() => setActiveSkill(skill.id)}
-            onMouseLeave={() => setActiveSkill(null)}
+            onMouseEnter={handleMouseEnter(skill.id)}
+            onMouseLeave={handleMouseLeave()}
           >
             <div className="skill-name">{skill.name}</div>
             <div className="skill-level">
@@ -208,11 +230,12 @@ const SkillsSection = () => {
       </div>
     </div>
   );
-};
+});
 
-const ExperienceItem = ({ experience, isVisible, setRef, index }) => (
+// ExperienceItem itself should be a React.memo component if its props are stable
+const ExperienceItem = React.memo(({ experience, isVisible, setRef }) => (
   <div
-    ref={setRef}
+    ref={setRef(experience.id.toString())} // Pass the ID directly
     data-id={experience.id}
     className={`experience-item ${isVisible ? 'visible' : ''}`}
   >
@@ -233,9 +256,10 @@ const ExperienceItem = ({ experience, isVisible, setRef, index }) => (
       </div>
     </div>
   </div>
-);
+));
 
-const ExperienceSection = ({ visibleElements, setElementRef }) => (
+// ExperienceSection also memoized
+const ExperienceSection = React.memo(({ visibleElements, setElementRef }) => (
   <div className="experience-section">
     <h2 className="section-title">Professional Journey</h2>
     <div className="timeline">
@@ -245,38 +269,65 @@ const ExperienceSection = ({ visibleElements, setElementRef }) => (
           height: `${(visibleElements.size / PROFESSIONAL_EXPERIENCE.length) * 100}%`
         }}
       />
-      {PROFESSIONAL_EXPERIENCE.map((exp, index) => (
+      {PROFESSIONAL_EXPERIENCE.map((exp) => (
         <ExperienceItem
           key={exp.id}
           experience={exp}
-          index={index}
-          setRef={setElementRef(index)}
+          setRef={setElementRef} // Pass the setRef directly
           isVisible={visibleElements.has(exp.id.toString())}
         />
       ))}
     </div>
   </div>
-);
+));
 
-const ScrollProgress = ({ progress }) => (
-  <div className="scroll-progress">
-    <div
-      className="scroll-progress-bar"
-      style={{ height: `${progress}%` }}
-    />
-  </div>
-);
 
 // Main component
 const About = () => {
-  const scrollProgress = useScrollProgress();
-  const { visibleElements, setElementRef } = useIntersectionObserver();
+  const aboutRef = useRef(null); // Ref for the main About container
+  const scrollProgress = useScrollProgress(aboutRef); // Pass ref to custom hook
+
+  const intersectionOptions = useMemo(() => ({
+    threshold: 0.2, // Reduced threshold for earlier visibility detection
+    rootMargin: "-20% 0px -20% 0px" // More aggressive margin to improve detection
+  }), []); // Memoize options to prevent re-creation
+
+  const { visibleElements, setElementRef } = useIntersectionObserver(intersectionOptions);
 
   return (
-    <div className="about-container">
-      <FloatingParticles />
-      <ScrollProgress progress={scrollProgress} />
+    // !!! IMPORTANT: Add id="about" here for Navbar to scroll to it !!!
+    <section id="about" className="about-container" ref={aboutRef}>
+      {/* Moved FloatingParticles and CyberCables into About.css for fixed positioning directly */}
+      <div className="cyber-cables">
+        <div className="cable-line cable-line-1"></div>
+        <div className="cable-line cable-line-2"></div>
+        <div className="cable-line cable-line-3"></div>
+        <div className="cable-line cable-line-4"></div>
+        {/* Reduced count, use fewer cables if performance is still an issue */}
+      </div>
       
+      {/* Floating Particles are handled by CSS fixed positioning, less React overhead */}
+      <div className="floating-particles-wrapper">
+        {Array.from({ length: 15 }, (_, i) => ( // Reduced particle count
+          <div
+            key={i}
+            className={`particle particle-${i + 1}`} // Add unique class for diverse styles
+            style={{
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 8}s`, // Increased delay range
+              animationDuration: `${10 + Math.random() * 10}s` // Increased duration range
+            }}
+          />
+        ))}
+      </div>
+
+
+      {/* Scroll Progress moved to CSS controlled by a variable */}
+      {/* <ScrollProgress progress={scrollProgress} /> */} 
+      {/* The scroll progress bar is now a fixed element, let's just make it part of the CSS and update its height via JS (which you already had, but refined) */}
+      <div className="scroll-progress-indicator" style={{ height: `${scrollProgress}%` }}></div>
+
+
       <div className="about-content">
         <div className="about-header">
           <ProfileHeader />
@@ -285,13 +336,13 @@ const About = () => {
         </div>
 
         <div className="about-main">
-          <ExperienceSection 
-            visibleElements={visibleElements} 
+          <ExperienceSection
+            visibleElements={visibleElements}
             setElementRef={setElementRef}
           />
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
