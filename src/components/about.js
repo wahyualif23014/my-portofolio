@@ -69,8 +69,10 @@ const SKILLS = [
   { id: 4, name: "Node.js", level: 85, category: "Backend" },
   { id: 5, name: "GraphQL", level: 82, category: "API" },
   { id: 6, name: "AWS", level: 78, category: "Cloud" },
-  { id: 7, name: "Docker", level: 75, category: "DevOps" },
-  { id: 8, name: "MongoDB", level: 80, category: "Database" }
+  { id: 7, name: "FLutter", level: 75, category: "App" },
+  { id: 8, name: "MongoDB", level: 80, category: "Database" },
+  { id: 9, name: "Python", level: 70, category: "Language" },
+  { id: 10, name: "Machine Learning", level: 65, category: "AI" }
 ];
 
 // Custom Hook for Scroll Progress (optimized)
