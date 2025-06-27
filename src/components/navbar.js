@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-// You might need to import Link from 'react-router-dom' if you use it for internal links
-// import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom'; // Import Link and useLocation
 import "./../styles/Navbar.css";
 
 const Navbar = () => {
@@ -8,10 +7,18 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const progressBarRef = useRef(null);
+  const location = useLocation(); // Get current location object from React Router
 
   const toggleMenu = useCallback(() => setMenuOpen(prev => !prev), []);
 
   const handleScroll = useCallback(() => {
+    // Only update active section based on scroll if we are on the homepage ('/')
+    if (location.pathname !== '/') {
+      setActiveSection(''); // Clear active section if not on homepage
+      setScrolled(true); // Navbar should generally appear 'scrolled' on other pages
+      return;
+    }
+
     const isScrolled = window.scrollY > 50;
     setScrolled(isScrolled);
 
@@ -21,8 +28,7 @@ const Navbar = () => {
       progressBarRef.current.style.setProperty('--scroll-progress', `${scrolledPercentage}%`);
     }
 
-    // For single-page sections, keep finding active section
-    const sections = ['hero', 'about', 'projects']; // 'contact' is now a separate page
+    const sections = ['hero', 'about', 'projects']; // Only in-page sections
     let foundActiveSection = 'hero';
 
     for (let i = sections.length - 1; i >= 0; i--) {
@@ -37,17 +43,23 @@ const Navbar = () => {
       }
     }
     setActiveSection(foundActiveSection);
-  }, []);
+  }, [location.pathname]); // Add location.pathname to dependencies
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll, { passive: true });
+    // Run once on mount and on route change
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [handleScroll]);
+  }, [handleScroll, location.pathname]); // Add location.pathname here too
 
-  const handleNavClick = useCallback((sectionId) => {
+  const handleNavClick = useCallback((sectionId, isExternalPage = false) => {
     setMenuOpen(false);
-    // This logic is now only for in-page section scrolling
+    if (isExternalPage) {
+      // For external page links, just navigate directly via Link or a plain <a>
+      // Link component handles this internally
+      return;
+    }
+    // For in-page section scrolling
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -57,7 +69,8 @@ const Navbar = () => {
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="navbar-container">
-        <div className="navbar-logo">
+        {/* Logo - now also links to home */}
+        <Link to="/" className="navbar-logo" onClick={() => setMenuOpen(false)}>
           <div className="logo-icon">
             <div className="logo-dot"></div>
             <div className="logo-ring"></div>
@@ -65,56 +78,56 @@ const Navbar = () => {
           <span className="logo-text">
             <span className="logo-highlight">Dewa</span>Portofolio
           </span>
-        </div>
+        </Link>
 
         <div className={`navbar-links ${menuOpen ? "active" : ""}`}>
-          <a
-            href="#hero"
-            className={activeSection === 'hero' ? 'active' : ''}
-            onClick={() => handleNavClick('hero')}
+          {/* ✨ IMPORTANT FIX: Use Link component for Home to navigate to '/' ✨ */}
+          <Link
+            to="/" // Link to the root path
+            className={location.pathname === '/' && activeSection === 'hero' ? 'active' : ''}
+            onClick={() => handleNavClick('hero')} // Still use handleNavClick for potential in-page scroll from '/'
           >
             <span className="nav-number">01</span>
             <span className="nav-text">Home</span>
             <div className="nav-glow"></div>
-          </a>
-          <a
+          </Link>
+          <a // These remain <a> tags for in-page scrolling
             href="#about"
-            className={activeSection === 'about' ? 'active' : ''}
+            className={location.pathname === '/' && activeSection === 'about' ? 'active' : ''}
             onClick={() => handleNavClick('about')}
           >
             <span className="nav-number">02</span>
             <span className="nav-text">About</span>
             <div className="nav-glow"></div>
           </a>
-          <a
+          <a // These remain <a> tags for in-page scrolling
             href="#projects"
-            className={activeSection === 'projects' ? 'active' : ''}
+            className={location.pathname === '/' && activeSection === 'projects' ? 'active' : ''}
             onClick={() => handleNavClick('projects')}
           >
             <span className="nav-number">03</span>
             <span className="nav-text">Projects</span>
             <div className="nav-glow"></div>
           </a>
-          {/* ✨ IMPORTANT FIX: Change href to the new page path for Contact ✨ */}
-          {/* Remove activeSection check and onClick handler for this link if it's a new page */}
-          <a
-            href="/contact" // This will navigate to the new /contact page
-            className={window.location.pathname === '/contact' ? 'active' : ''} // Set active if on contact page
+          {/* Contact link uses Link to navigate to new page */}
+          <Link
+            to="/contact" // Link to the new /contact page
+            className={location.pathname === '/contact' ? 'active' : ''}
             onClick={() => setMenuOpen(false)} // Close menu on click
           >
             <span className="nav-number">04</span>
             <span className="nav-text">Contact</span>
             <div className="nav-glow"></div>
-          </a>
+          </Link>
 
-          {/* CTA Button */}
+          {/* CTA Button - also links to new contact page */}
           <div className="navbar-cta">
-            <a href="/contact" className="cta-button" onClick={() => setMenuOpen(false)}> {/* Link to new page */}
+            <Link to="/contact" className="cta-button" onClick={() => setMenuOpen(false)}>
               <span>Let's Talk</span>
               <svg className="cta-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-            </a>
+            </Link>
           </div>
         </div>
 

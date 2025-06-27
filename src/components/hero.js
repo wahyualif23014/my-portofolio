@@ -48,7 +48,6 @@ const Hero = () => {
     };
   }, [handleMouseMove]); // Add handleMouseMove to dependency array
 
-  // Generate floating particles - consider reducing the count or using CSS for more static background
   const generateParticles = () => {
     // Reduced number of particles for performance
     const numberOfParticles = 10;
