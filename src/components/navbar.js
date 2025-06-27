@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+// You might need to import Link from 'react-router-dom' if you use it for internal links
+// import { Link } from 'react-router-dom';
 import "./../styles/Navbar.css";
 
 const Navbar = () => {
@@ -19,7 +21,8 @@ const Navbar = () => {
       progressBarRef.current.style.setProperty('--scroll-progress', `${scrolledPercentage}%`);
     }
 
-    const sections = ['hero', 'about', 'projects', 'contact']; // Ensure these IDs exist in your components
+    // For single-page sections, keep finding active section
+    const sections = ['hero', 'about', 'projects']; // 'contact' is now a separate page
     let foundActiveSection = 'hero';
 
     for (let i = sections.length - 1; i >= 0; i--) {
@@ -27,8 +30,6 @@ const Navbar = () => {
       const element = document.getElementById(section);
       if (element) {
         const rect = element.getBoundingClientRect();
-        // Adjust this threshold as needed for when a section becomes 'active'
-        // This checks if the section is roughly in the middle 60% of the viewport
         if (rect.top <= window.innerHeight * 0.4 && rect.bottom >= window.innerHeight * 0.6) {
           foundActiveSection = section;
           break;
@@ -40,13 +41,13 @@ const Navbar = () => {
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll, { passive: true });
-    // Run once on mount to set initial scroll status and active section
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
 
   const handleNavClick = useCallback((sectionId) => {
     setMenuOpen(false);
+    // This logic is now only for in-page section scrolling
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -56,7 +57,6 @@ const Navbar = () => {
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="navbar-container">
-        {/* Logo */}
         <div className="navbar-logo">
           <div className="logo-icon">
             <div className="logo-dot"></div>
@@ -67,7 +67,6 @@ const Navbar = () => {
           </span>
         </div>
 
-        {/* Navigation Links */}
         <div className={`navbar-links ${menuOpen ? "active" : ""}`}>
           <a
             href="#hero"
@@ -96,10 +95,12 @@ const Navbar = () => {
             <span className="nav-text">Projects</span>
             <div className="nav-glow"></div>
           </a>
+          {/* ✨ IMPORTANT FIX: Change href to the new page path for Contact ✨ */}
+          {/* Remove activeSection check and onClick handler for this link if it's a new page */}
           <a
-            href="#contact"
-            className={activeSection === 'contact' ? 'active' : ''}
-            onClick={() => handleNavClick('contact')}
+            href="/contact" // This will navigate to the new /contact page
+            className={window.location.pathname === '/contact' ? 'active' : ''} // Set active if on contact page
+            onClick={() => setMenuOpen(false)} // Close menu on click
           >
             <span className="nav-number">04</span>
             <span className="nav-text">Contact</span>
@@ -108,7 +109,7 @@ const Navbar = () => {
 
           {/* CTA Button */}
           <div className="navbar-cta">
-            <a href="#contact" className="cta-button" onClick={() => handleNavClick('contact')}>
+            <a href="/contact" className="cta-button" onClick={() => setMenuOpen(false)}> {/* Link to new page */}
               <span>Let's Talk</span>
               <svg className="cta-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -126,12 +127,10 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Progress Bar */}
       <div className="scroll-progress">
         <div className="progress-bar" ref={progressBarRef}></div>
       </div>
 
-      {/* Background Elements */}
       <div className="navbar-bg-effects">
         <div className="nav-particle nav-particle-1"></div>
         <div className="nav-particle nav-particle-2"></div>
