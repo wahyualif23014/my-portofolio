@@ -1,46 +1,64 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import "./../styles/Navbar.css";
+
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
+  const progressBarRef = useRef(null); // Ref for the progress bar
 
-  const toggleMenu = () => setMenuOpen(!menuOpen);
+  const toggleMenu = useCallback(() => setMenuOpen(prev => !prev), []); // Memoize toggleMenu
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const isScrolled = window.scrollY > 50;
-      setScrolled(isScrolled);
+  // Using a ref for the scroll listener and memoizing it
+  const handleScroll = useCallback(() => {
+    // Determine scroll status
+    const isScrolled = window.scrollY > 50;
+    setScrolled(isScrolled);
 
-      // Update active section based on scroll position
-      const sections = ['hero', 'about', 'projects', 'contact'];
-      const currentSection = sections.find(section => {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          return rect.top <= 100 && rect.bottom >= 100;
+    // Calculate scroll progress for the progress bar
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const scrolledPercentage = (window.scrollY / scrollHeight) * 100;
+    if (progressBarRef.current) {
+      progressBarRef.current.style.setProperty('--scroll-progress', `${scrolledPercentage}%`);
+    }
+
+    // Debounce or throttle this if performance is still an issue
+    // For now, let's optimize the section detection logic
+    const sections = ['hero', 'about', 'projects', 'contact'];
+    let foundActiveSection = 'hero'; // Default to hero
+
+    // Iterate through sections from bottom up for more accurate active section detection
+    for (let i = sections.length - 1; i >= 0; i--) {
+      const section = sections[i];
+      const element = document.getElementById(section);
+      if (element) {
+        const rect = element.getBoundingClientRect();
+        // Check if the section's top is within the viewport and relatively high up
+        // Adjust this threshold as needed
+        if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
+          foundActiveSection = section;
+          break; // Found the most relevant section, break early
         }
-        return false;
-      });
-
-      if (currentSection) {
-        setActiveSection(currentSection);
       }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    }
+    setActiveSection(foundActiveSection);
   }, []);
 
-  const handleNavClick = (sectionId) => {
+  useEffect(() => {
+    // Attach and clean up scroll event listener
+    window.addEventListener('scroll', handleScroll, { passive: true }); // Use passive listener for performance
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
+
+  const handleNavClick = useCallback((sectionId) => {
     setMenuOpen(false);
-    setActiveSection(sectionId);
-    
+    // setActiveSection is updated by the scroll handler, no need to force it here immediately
     const element = document.getElementById(sectionId);
     if (element) {
+      // Use smooth scroll behavior directly
       element.scrollIntoView({ behavior: 'smooth' });
     }
-  };
+  }, []); // No dependencies as it only interacts with DOM and state setters
 
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
@@ -58,8 +76,8 @@ const Navbar = () => {
 
         {/* Navigation Links */}
         <div className={`navbar-links ${menuOpen ? "active" : ""}`}>
-          <a 
-            href="#hero" 
+          <a
+            href="#hero"
             className={activeSection === 'hero' ? 'active' : ''}
             onClick={() => handleNavClick('hero')}
           >
@@ -67,8 +85,8 @@ const Navbar = () => {
             <span className="nav-text">Home</span>
             <div className="nav-glow"></div>
           </a>
-          <a 
-            href="#about" 
+          <a
+            href="#about"
             className={activeSection === 'about' ? 'active' : ''}
             onClick={() => handleNavClick('about')}
           >
@@ -76,21 +94,21 @@ const Navbar = () => {
             <span className="nav-text">About</span>
             <div className="nav-glow"></div>
           </a>
-          <a 
-            href="#projects" 
+          <a
+            href="#projects"
             className={activeSection === 'projects' ? 'active' : ''}
             onClick={() => handleNavClick('projects')}
           >
-            <span className="nav-number">02</span>
+            <span className="nav-number">03</span> {/* Corrected number */}
             <span className="nav-text">Projects</span>
             <div className="nav-glow"></div>
           </a>
-          <a 
-            href="#contact" 
+          <a
+            href="#contact"
             className={activeSection === 'contact' ? 'active' : ''}
             onClick={() => handleNavClick('contact')}
           >
-            <span className="nav-number">03</span>
+            <span className="nav-number">04</span> {/* Corrected number */}
             <span className="nav-text">Contact</span>
             <div className="nav-glow"></div>
           </a>
@@ -117,14 +135,14 @@ const Navbar = () => {
 
       {/* Progress Bar */}
       <div className="scroll-progress">
-        <div className="progress-bar"></div>
+        <div className="progress-bar" ref={progressBarRef}></div>
       </div>
 
-      {/* Background Elements */}
+      {/* Background Elements - Reduced count */}
       <div className="navbar-bg-effects">
         <div className="nav-particle nav-particle-1"></div>
         <div className="nav-particle nav-particle-2"></div>
-        <div className="nav-particle nav-particle-3"></div>
+        {/* Removed nav-particle-3 */}
       </div>
     </nav>
   );
